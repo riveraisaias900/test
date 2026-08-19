@@ -1,45 +1,22 @@
 cmake_minimum_required(VERSION 3.22)
 
-project(Iso3D)
-
-set(CMAKE_CXX_STANDARD 20)
-
-set(LIB_DIR ${CMAKE_CURRENT_SOURCE_DIR}/libs)
-
-include(cmake/cpm.cmake)
-
-cpmaddpackage(
-  NAME
-  JUCE
-  GIT_TAG
-  8.0.6
-  VERSION
-  8.0.6
-  GITHUB_REPOSITORY
-  juce-framework/JUCE
-  SOURCE_DIR
-  ${LIB_DIR}/juce
-)
-
-cpmaddpackage(
-  NAME
-  GOOGLETEST
-  GITHUB_REPOSITORY
-  google/googletest
-  VERSION
-  1.16.0
-  SOURCE_DIR
-  ${LIB_DIR}/googletest
-  OPTIONS
-  "INSTALL_GTEST OFF"
-  "gtest_force_shared_crt ON"
-)
-
-include(cmake/CompilerWarnings.cmake)
-include(cmake/Util.cmake)
-
-add_subdirectory(plugin)
+project(AudioPluginTest)
 
 enable_testing()
 
-add_subdirectory(test)
+set(SOURCE_FILES source/AudioProcessorTest.cpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES})
+
+target_include_directories(${PROJECT_NAME} PRIVATE ${GOOGLETEST_SOURCE_DIR}/googletest/include)
+
+target_link_libraries(${PROJECT_NAME} PRIVATE AudioPlugin GTest::gtest_main)
+
+set_source_files_properties(${SOURCE_FILES} PROPERTIES COMPILE_OPTIONS "${PROJECT_WARNINGS_CXX}")
+
+include(GoogleTest)
+
+if(CMAKE_GENERATOR STREQUAL Xcode)
+  gtest_discover_tests(${PROJECT_NAME} DISCOVERY_MODE PRE_TEST)
+else()
+  gtest_discover_tests(${PROJECT_NAME})
+endif()
