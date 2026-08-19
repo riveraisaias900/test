@@ -1,0 +1,42 @@
+name: Build Iso3D for Windows
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  build-windows:
+    runs-on: windows-2022
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v4
+
+      - name: Configure (Visual Studio 2022)
+        shell: pwsh
+        run: cmake --preset vs
+
+      - name: Build Release
+        shell: pwsh
+        run: cmake --build --preset vs --config Release --parallel
+
+      - name: Locate VST3
+        id: vst3
+        shell: pwsh
+        run: |
+          $bundle = Get-ChildItem -Path . -Directory -Recurse -Filter "Iso3D.vst3" | Select-Object -First 1
+          if (-not $bundle) {
+            Write-Error "Iso3D.vst3 was not found after compilation."
+            exit 1
+          }
+          Write-Host "Found: $($bundle.FullName)"
+          "path=$($bundle.FullName)" | Out-File -FilePath $env:GITHUB_OUTPUT -Append
+
+      - name: Upload Iso3D VST3
+        uses: actions/upload-artifact@v4
+        with:
+          name: Iso3D-Windows-VST3
+          path: ${{ steps.vst3.outputs.path }}
+          if-no-files-found: error
+          compression-level: 0
