@@ -1,0 +1,22 @@
+ISO3D PARA WINDOWS SIN INSTALAR VISUAL STUDIO EN TU PC
+======================================================
+
+Este ZIP incluye un workflow de GitHub Actions que compila Iso3D en un
+servidor Windows de GitHub usando Visual Studio 2022.
+
+PASOS:
+1) Crea un repositorio nuevo en GitHub.
+2) Sube TODO el contenido de esta carpeta al repositorio, incluyendo la carpeta .github.
+3) Abre la pestaña Actions del repositorio.
+4) Entra en "Build Iso3D for Windows" y pulsa "Run workflow".
+5) Espera a que el trabajo termine con un check verde.
+6) Abre esa ejecución y, abajo en Artifacts, descarga "Iso3D-Windows-VST3".
+7) Descomprime el archivo descargado.
+8) Copia la carpeta Iso3D.vst3 completa a:
+   C:\Program Files\Common Files\VST3
+9) Reinicia VirtualDJ y busca Iso3D entre los VST3/efectos.
+
+NOTA:
+- No necesitas instalar Visual Studio, CMake ni Ninja localmente.
+- GitHub Actions necesita acceso a Internet porque el proyecto descarga JUCE y GoogleTest.
+- Si la compilación falla, descarga el log de Actions y pásamelo para corregirlo.
